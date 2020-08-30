@@ -1,13 +1,11 @@
 #include <string>
-#include <iostream>
-#include <vector>
-#include <array>
 #include <thread>
 #include <chrono>
+#include <array>
 
-#include <SFML/Graphics.hpp>
+#include "PreFabs.cpp"
 
-constexpr unsigned int WINDOW_X{ 800 }, WINDOW_Y{ 600 }, TILE_SIZE{ 10 }, GENERATIONS_PER_SEC{ 5 };
+constexpr unsigned int WINDOW_X{ 800 }, WINDOW_Y{ 600 }, TILE_SIZE{ 10 }, GENERATIONS_PER_SEC{ 15 };
 const sf::Vector2f TILE_RECT_SIZE{ 10, 10 };
 const std::string title { "Game Of life" };
 
@@ -132,6 +130,14 @@ class GameOfLife
       }
     }
 
+    void addPrefab(std::vector<Prefabs::Point_Cordinate> prefab_vector)
+    {
+      for(Prefabs::Point_Cordinate point : prefab_vector)
+      {
+        addRectangle(point.x, point.y);
+      }
+    }
+
     void clearRectangle()
     {
       rectangles.clear();
@@ -146,6 +152,29 @@ int main()
 
   //Game
   GameOfLife game;
+  Prefabs::PreFabs_Factory prefab_factory;
+
+  //Text
+  sf::Font font;
+  sf::Text game_state;
+  const std::string pause{ "Paused" };
+  const std::string playing{ "Playing" };
+
+  //Font
+  try
+  {
+    font.loadFromFile("./resources/CHLORINR.TTF");
+    game_state.setFillColor(sf::Color::Red);
+    game_state.setString(pause);
+    game_state.setFont(font);
+    game_state.setCharacterSize(25);
+    game_state.setPosition(5, 5);
+
+  }catch(std::exception e)
+  {
+    std::cout << "Font could not be Loaded." << std::endl;
+  }
+
 
   //Game Loop
   while(window.isOpen())
@@ -166,6 +195,16 @@ int main()
       game.addRectangle(x, y);
     }
 
+    if(sf::Mouse::isButtonPressed(sf::Mouse::Right))
+    {
+      int x = sf::Mouse::getPosition(window).x;
+      int y = sf::Mouse::getPosition(window).y;
+
+      game.addPrefab(
+        prefab_factory.getPrefabByName(
+          x, y, TILE_SIZE, prefab_factory.LightWeightSpaceship));
+    }
+
     window.clear();
 
     for(sf::RectangleShape rect : game.getrectangles())
@@ -173,16 +212,27 @@ int main()
       window.draw(rect);
     }
 
-    if(!sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::A))
     {
-      game.nextGeneration();
-      std::this_thread::sleep_for(std::chrono::milliseconds(1000/GENERATIONS_PER_SEC));
+      game_state.setString(pause);
     }
 
-    
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+    {
+      game_state.setString(playing);
+    }
+
+    if(game_state.getString() == playing)
+    {
+      game.nextGeneration();
+    }
+
+    window.draw(game_state);
+
     window.display();
 
-
+    //Pause thread to control framerate.
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000/GENERATIONS_PER_SEC));
   }
 
   return EXIT_SUCCESS;
