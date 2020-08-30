@@ -1,7 +1,7 @@
 #include <string>
+#include <array>
 #include <thread>
 #include <chrono>
-#include <array>
 
 #include "PreFabs.cpp"
 
@@ -44,7 +44,7 @@ class GameOfLife
     bool addRectangle(int x, int y)
     {
 
-      if(x >=0 && y >= 0  && x <= WINDOW_X-TILE_SIZE && y <= WINDOW_Y-TILE_SIZE)
+      if(x >= 0 && y >= 0  && x <= WINDOW_X-TILE_SIZE && y <= WINDOW_Y-TILE_SIZE)
       {
         x = (x/TILE_SIZE) * TILE_SIZE;
         y = (y/TILE_SIZE) * TILE_SIZE;
@@ -58,7 +58,6 @@ class GameOfLife
         sf::RectangleShape rect;
         rect.setSize(TILE_RECT_SIZE);
         rect.setPosition(x, y);
-        rect.setOutlineColor(sf::Color::Blue);
         rect.setFillColor(sf::Color{ 50, 168, 82, 255 });
         rectangles.push_back(rect);
 
@@ -187,25 +186,29 @@ int main()
         window.close();
     }
 
+    //Clear the previously rendered window.
+    window.clear();
+
+    //Left mouse button to add Tiles one at a time.
     if(sf::Mouse::isButtonPressed(sf::Mouse::Left))
     {
       int x = sf::Mouse::getPosition(window).x;
       int y = sf::Mouse::getPosition(window).y;
-
       game.addRectangle(x, y);
     }
 
+    //Right Mouse Button to add Prefab selected.
     if(sf::Mouse::isButtonPressed(sf::Mouse::Right))
     {
       int x = sf::Mouse::getPosition(window).x;
       int y = sf::Mouse::getPosition(window).y;
-
       game.addPrefab(
         prefab_factory.getPrefabByName(
-          x, y, TILE_SIZE, prefab_factory.LightWeightSpaceship));
+          x, y, TILE_SIZE, prefab_factory.glider, (int)prefab_factory.selected_prefab_number));
     }
 
-    window.clear();
+    //Middle Mouse button to Select the prefab
+    prefab_factory.selectPrefab(window, event,TILE_SIZE);
 
     for(sf::RectangleShape rect : game.getrectangles())
     {
