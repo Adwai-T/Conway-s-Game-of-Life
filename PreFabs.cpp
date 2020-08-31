@@ -98,6 +98,9 @@ namespace Prefabs
 
         float selected_prefab_number = 0.0;
         const unsigned int totalNumberOfPrefabs = 4;
+
+        //Right now not being used but might be used in future developement.
+        //Used in the switch statement to get number with a name.
         enum prefab_names
         {
             glider,

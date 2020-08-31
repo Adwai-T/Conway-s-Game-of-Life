@@ -5,9 +5,9 @@
 
 #include "PreFabs.cpp"
 
-constexpr unsigned int WINDOW_X{800}, WINDOW_Y{600}, TILE_SIZE{10}, GENERATIONS_PER_SEC{15};
-const sf::Vector2f TILE_RECT_SIZE{10, 10};
+const unsigned int WINDOW_X{800}, WINDOW_Y{600}, TILE_SIZE{10}, GENERATIONS_PER_SEC{15};
 const std::string title{"Game Of life"};
+const sf::Vector2f TILE_RECT_SIZE{TILE_SIZE, TILE_SIZE};
 
 class GameOfLife
 {
